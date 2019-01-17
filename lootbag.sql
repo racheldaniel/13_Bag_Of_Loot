@@ -1,0 +1,16 @@
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE 'Child' (
+    'ChildId' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    'Name' TEXT NOT NULL,
+    'Delivered' BOOLEAN NOT NULL
+);
+
+CREATE TABLE 'Toy'(
+    'ToyId' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    'Name' TEXT NOT NULL,
+    'ChildId' INTEGER NOT NULL,
+    FOREIGN KEY(`ChildId`)
+    REFERENCES `Child`(`ChildId`)
+    ON DELETE cascade
+);

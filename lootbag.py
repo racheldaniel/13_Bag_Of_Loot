@@ -40,6 +40,12 @@ class Bag():
             Takes one argument -- set of sys.args"""
         if args[1] == "add" and len(args) == 4:
             self.add_toy(args[2], args[3])
+        elif args[1] == "remove" and len(args) == 4:
+            self.remove_toy(args[2], args[3])
+        elif args[1] == "ls" and len(args) == 2:
+            self.list_children()
+        elif args[1] == "ls" and len(args) == 3:
+            self.list_child_toys(args[2])
 
     def add_toy(self, child_name, toy_name):
         """ Add toy to bag-- first check to see if child exists. If not, add both a child and toy to the db
@@ -51,7 +57,6 @@ class Bag():
         """
         child_id = ""
         child = self.get_child(child_name)
-        print(child)
         if len(child) == 1:
             child_id = child[0][0]
             with sqlite3.connect(self.__lootbag) as conn:
@@ -91,8 +96,86 @@ class Bag():
                 except sqlite3.OperationalError as err:
                     print("oops", err)
 
+    def remove_toy(self, toy_name, child_name):
+        """ Remove toy from bag-- first check to see if child exists. If not, add both a child and toy to the db
 
+            Takes two arguments:
 
+            child_name -- String
+            toy_name -- String
+        """
+        child = self.get_child(child_name)
+        if len(child) == 1:
+            child_id = child[0][0]
+            with sqlite3.connect(self.__lootbag) as conn:
+                cursor = conn.cursor()
+                try:
+                    cursor.execute(
+                        f'''
+                        DELETE FROM Toy
+                        WHERE Toy.ChildId = '{child_id}'
+                        AND Toy.Name = '{toy_name}'
+                        '''
+                    )
+                except sqlite3.OperationalError as err:
+                    print("oops", err)
+        else:
+            raise ValueError("Oops, I can't find that child")
+
+    def remove_child(self, child_name):
+        child = self.get_child(child_name)
+        if len(child) == 1:
+            child_id = child[0][0]
+            with sqlite3.connect(self.__lootbag) as conn:
+                cursor = conn.cursor()
+                try:
+                    cursor.execute(
+                        f'''
+                        DELETE FROM Child
+                        WHERE Child.Name = '{child_name}'
+                        '''
+                    )
+                except sqlite3.OperationalError as err:
+                    print("oops", err)
+            #TODO: This should be cascading but currently isn't
+            with sqlite3.connect(self.__lootbag) as conn:
+                cursor = conn.cursor()
+                try:
+                    cursor.execute(
+                        f'''
+                        DELETE FROM Toy
+                        WHERE Toy.ChildId = '{child_id}'
+                        '''
+                    )
+                except sqlite3.OperationalError as err:
+                    print("oops", err)
+        else:
+            raise ValueError("That child doesn't seem to have any toys")
+
+    def list_children(self):
+        with sqlite3.connect(self.__lootbag) as conn:
+            cursor = conn.cursor()
+            try:
+                cursor.execute("SELECT Child.Name FROM Child")
+                children = cursor.fetchall()
+                print(children)
+            except sqlite3.OperationalError as err:
+                print("oops", err)
+
+    def list_child_toys(self, child_name):
+        child = self.get_child(child_name)
+        if len(child) == 1:
+            child_id = child[0][0]
+            with sqlite3.connect(self.__lootbag) as conn:
+                cursor = conn.cursor()
+                try:
+                    cursor.execute(f"SELECT Toy.Name FROM Toy WHERE Toy.ChildId = '{child_id}'")
+                    child_toys = cursor.fetchall()
+                    print(child_toys)
+                except sqlite3.OperationalError as err:
+                    print("oops", err)
+        else:
+            raise ValueError("I can't find that child")
 
 if __name__ == '__main__':
     bag = Bag()

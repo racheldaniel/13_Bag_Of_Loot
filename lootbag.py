@@ -182,6 +182,7 @@ class Bag():
                 for child in children:
                     for name in child:
                         print(name)
+                return(children)
             except sqlite3.OperationalError as err:
                 print("oops", err)
 
@@ -200,6 +201,7 @@ class Bag():
                     for child in child_toys:
                         for toy in child:
                             print(toy)
+                    return child_toys
                 except sqlite3.OperationalError as err:
                     print("oops", err)
         else:

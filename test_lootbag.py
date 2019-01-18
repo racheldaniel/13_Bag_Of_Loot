@@ -9,27 +9,41 @@ class TestBag(unittest.TestCase):
     def setUpClass(cls):
         cls.bag = Bag()
 
-    def test_get_child(self):
-        result = len(self.bag.get_child('Lucy'))
+    def test_get_null_child(self):
         null_result = len(self.bag.get_child('Merple'))
-        self.assertEqual(result, 1)
         self.assertEqual(null_result, 0)
 
-    def test_get_toy(self):
-        result = len(self.bag.get_toy('Doll'))
+    def test_get_null_toy(self):
         null_result = len(self.bag.get_toy('Flamethrower'))
-        self.assertEqual(result, 1)
         self.assertEqual(null_result, 0)
 
-    def test_add_and_delete(self):
-        self.bag.add_toy('Chudley', 'Cannon')
+    def test_add_get_delete(self):
 
+        """test add_toy, get_toy, get_child, remove_toy and remove_child
+
+            -Create a new child 'Chudley'
+            -Add 'Cannon' and 'Switchblade' as toys for Chudley
+            -Check that child and both toys are added
+            -Delete Switchblade, make sure it's gone
+            -Delete Chudley, make sure both Chudley and Cannon are gone
+        """
+
+        self.bag.add_toy('Chudley', 'Cannon')
+        self.bag.add_toy('Chudley', 'Switchblade')
+
+        toy_result = len(self.bag.get_toy('Switchblade'))
+        self.assertEqual(toy_result, 1)
 
         child_result = len(self.bag.get_child('Chudley'))
         toy_result = len(self.bag.get_toy('Cannon'))
 
         self.assertEqual(child_result, 1)
         self.assertEqual(toy_result, 1)
+
+        self.bag.remove_toy('Switchblade', 'Chudley')
+
+        null_toy_result = len(self.bag.get_toy('Switchblade'))
+        self.assertEqual(null_toy_result, 0)
 
         self.bag.remove_child('Chudley')
         null_child_result = len(self.bag.get_child('Chudley'))
@@ -38,15 +52,26 @@ class TestBag(unittest.TestCase):
         self.assertEqual(null_child_result, 0)
         self.assertEqual(null_toy_result, 0)
 
-        self.bag.add_toy('Lucy', 'Switchblade')
+    def test_list_children_and_toys(self):
 
-        toy_result = len(self.bag.get_toy('Switchblade'))
-        self.assertEqual(toy_result, 1)
+        starting_child = len(self.bag.list_children())
+        expected_child = starting_child + 1
 
-        self.bag.remove_toy('Switchblade', 'Lucy')
+        self.bag.add_toy('Merple', 'Hand Grenade')
+        result_child = len(self.bag.list_children())
 
-        null_toy_result = len(self.bag.get_toy('Switchblade'))
-        self.assertEqual(null_toy_result, 0)
+        self.assertEqual(result_child, expected_child)
+
+        toy_length = len(self.bag.list_child_toys('Merple'))
+        self.assertEqual(toy_length, 1)
+
+        self.bag.remove_child('Merple')
+
+
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

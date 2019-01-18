@@ -28,8 +28,8 @@ class TestBag(unittest.TestCase):
             -Delete Chudley, make sure both Chudley and Cannon are gone
         """
 
-        self.bag.add_toy('Chudley', 'Cannon')
-        self.bag.add_toy('Chudley', 'Switchblade')
+        self.bag.add_toy( 'Cannon', 'Chudley')
+        self.bag.add_toy( 'Switchblade', 'Chudley')
 
         toy_result = len(self.bag.get_toy('Switchblade'))
         self.assertEqual(toy_result, 1)
@@ -40,7 +40,7 @@ class TestBag(unittest.TestCase):
         self.assertEqual(child_result, 1)
         self.assertEqual(toy_result, 1)
 
-        self.bag.remove_toy('Switchblade', 'Chudley')
+        self.bag.remove_toy('Chudley', 'Switchblade')
 
         null_toy_result = len(self.bag.get_toy('Switchblade'))
         self.assertEqual(null_toy_result, 0)
@@ -52,12 +52,13 @@ class TestBag(unittest.TestCase):
         self.assertEqual(null_child_result, 0)
         self.assertEqual(null_toy_result, 0)
 
+
     def test_list_children_and_toys(self):
 
         starting_child = len(self.bag.list_children())
         expected_child = starting_child + 1
 
-        self.bag.add_toy('Merple', 'Hand Grenade')
+        self.bag.add_toy('Hand Grenade', 'Merple')
         result_child = len(self.bag.list_children())
 
         self.assertEqual(result_child, expected_child)
@@ -67,6 +68,19 @@ class TestBag(unittest.TestCase):
 
         self.bag.remove_child('Merple')
 
+
+    def test_delivered(self):
+        self.bag.add_toy('Loose Teeth', 'Derp')
+        result = self.bag.get_child('Derp')[0][2]
+
+        self.assertEqual(result, 0)
+
+        self.bag.deliver_toys('Derp')
+        result = self.bag.get_child('Derp')[0][2]
+
+        self.assertEqual(result, 1)
+
+        self.bag.remove_child('Derp')
 
 
 

@@ -13,6 +13,8 @@ python lootbag.py help -- see all commands
 import sqlite3
 import sys
 
+
+
 class Bag():
 
     __lootbag = '/Users/rachel/workspace/python/exercises/13_bag_of_loot/lootbag.db'
@@ -61,13 +63,13 @@ class Bag():
             print("Hmm, I don't recognize that command. Type {python lootbag.py help} to see options. ")
 
 
-    def add_toy(self, child_name, toy_name):
+    def add_toy(self, toy_name, child_name):
         """ Add toy to bag-- first check to see if child exists. If not, add both a child and toy to the db
 
             Takes two arguments:
 
-            child_name -- String
             toy_name -- String
+            child_name -- String
         """
         child_id = ""
         child = self.get_child(child_name)
@@ -110,7 +112,7 @@ class Bag():
                 except sqlite3.OperationalError as err:
                     print("oops", err)
 
-    def remove_toy(self, toy_name, child_name):
+    def remove_toy(self, child_name, toy_name):
         """ Remove toy from bag-- first check to see if child exists. If not, add both a child and toy to the db
 
             Takes two arguments:
@@ -142,9 +144,10 @@ class Bag():
         """
         child = self.get_child(child_name)
         if len(child) == 1:
-            child_id = child[0][0]
+            # child_id = child[0][0]
             with sqlite3.connect(self.__lootbag) as conn:
                 cursor = conn.cursor()
+                cursor.execute(" PRAGMA foreign_keys = ON")
                 try:
                     cursor.execute(
                         f'''
@@ -153,18 +156,6 @@ class Bag():
                         '''
                     )
 
-                except sqlite3.OperationalError as err:
-                    print("oops", err)
-            # TODO: This should be cascading but currently isn't
-            with sqlite3.connect(self.__lootbag) as conn:
-                cursor = conn.cursor()
-                try:
-                    cursor.execute(
-                        f'''
-                        DELETE FROM Toy
-                        WHERE Toy.ChildId = '{child_id}'
-                        '''
-                    )
                 except sqlite3.OperationalError as err:
                     print("oops", err)
         else:

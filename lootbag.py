@@ -25,7 +25,7 @@ class Bag():
         with sqlite3.connect(self.__lootbag) as conn:
                 cursor = conn.cursor()
                 cursor.execute(
-                    f"SELECT * FROM Child WHERE Child.Name = '{child_name}'")
+                    f"SELECT * FROM Child WHERE Child.Name LIKE '{child_name}'")
                 child = cursor.fetchall()
                 return child
 
@@ -36,7 +36,7 @@ class Bag():
         with sqlite3.connect(self.__lootbag) as conn:
                 cursor = conn.cursor()
 
-                cursor.execute(f"SELECT * FROM Toy WHERE Name = '{toy_name}'")
+                cursor.execute(f"SELECT * FROM Toy WHERE Name LIKE '{toy_name}'")
                 toy = cursor.fetchall()
                 return toy
 
@@ -128,7 +128,7 @@ class Bag():
                         f'''
                         DELETE FROM Toy
                         WHERE Toy.ChildId = '{child_id}'
-                        AND Toy.Name = '{toy_name}'
+                        AND Toy.Name LIKE '{toy_name}'
                         '''
                     )
                 except sqlite3.OperationalError as err:
@@ -149,7 +149,7 @@ class Bag():
                     cursor.execute(
                         f'''
                         DELETE FROM Child
-                        WHERE Child.Name = '{child_name}'
+                        WHERE Child.Name LIKE '{child_name}'
                         '''
                     )
 
